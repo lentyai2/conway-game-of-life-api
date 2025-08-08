@@ -1,0 +1,5 @@
+    {
+        "editor.tabSize": 2, // Set the number of spaces for indentation
+        "editor.insertSpaces": true, // Use spaces instead of tabs
+        "editor.detectIndentation": false // Prevent VS Code from auto-detecting indentation based on file content
+    }

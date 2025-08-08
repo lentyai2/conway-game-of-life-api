@@ -1,0 +1,112 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using GameOfLife.Game;
+using Newtonsoft.Json;
+using MathNet.Numerics.LinearAlgebra.Double;
+
+namespace GameOfLife.Api;
+
+// [ApiController]
+// [Route("[controller]")]
+public class GameController : ControllerBase
+{
+  private readonly GameService _gameService;
+
+  public GameController(GameService gameService)
+  {
+    _gameService = gameService;
+  }
+
+  [HttpGet]
+  public IEnumerable<GameModel> Get()
+  {
+    var result = _gameService.GetGames();
+    return result;
+  }
+
+  [HttpGet("{id:length(24)}")]
+  public async Task<ActionResult<GameModel>> Get(string id)
+  {
+    var game = await _gameService.GetAsync(id);
+
+    if (game is null)
+    {
+      return NotFound();
+    }
+    //Get Next State:
+    //1. take the returned game and get current state in sparse matrix
+    //2. convert sparse matrix back to dense matrix
+    //3. create a new Board instance with the dense matrix
+    //4. call NextGeneration on the Board instance
+    //6. return the updated game model
+    return game;
+  }
+
+  public int[][] NextState(string id)
+  {
+    var game = _gameService.GetGameById(id);
+
+    int[][] test = [new int[] { 1, 0, 0 }, new int[] { 0, 1, 1 }, new int[] { 0, 0, 1 }]; // Placeholder for next state logic
+    return test;
+  }
+
+  [HttpPost]
+  public async Task<IActionResult> Post(int[][] initialState)
+  {
+    var matrix = ToMatrix(initialState);
+    if (matrix.GetLength(0) == 0 || matrix.GetLength(1) == 0)
+    {
+      return BadRequest("Initial state cannot be empty.");
+    }
+    var board = new Board(matrix);    
+
+    // Convert to sparse array representation (List of CellPosition)
+    List<CellPosition> sparseRepresentation = [];
+
+    for (int r = 0; r < initialState[0].Length; r++)
+    {
+        for (int c = 0; c < initialState[r].Length; c++)
+        {
+            if (initialState[r][c] != 0) // Only store non-zero elements
+            {
+                sparseRepresentation.Add(new CellPosition { Row = r, Col = c });
+            }
+        }
+    }
+        
+    var gameModel = new GameModel(board, sparseRepresentation);
+    
+    await _gameService.CreateAsync(gameModel);
+
+    return Ok(gameModel);
+  }
+  private static int[,] ToMatrix(int[][] jaggedArray)
+  {
+
+    if (jaggedArray == null || jaggedArray.Length == 0)
+    {
+      return new int[0, 0];
+    }
+    int rows = jaggedArray.Length;
+    int maxCols = 0;
+    foreach (int[] innerArray in jaggedArray)
+    {
+      if (innerArray.Length > maxCols)
+      {
+        maxCols = innerArray.Length;
+      }
+    }
+
+    int[,] twoDArray = new int[rows, maxCols];
+
+    for (int i = 0; i < rows; i++)
+    {
+      for (int j = 0; j < jaggedArray[i].Length; j++)
+      {
+        twoDArray[i, j] = jaggedArray[i][j];
+      }
+    }
+
+    return twoDArray;
+  }
+}
