@@ -1,7 +1,5 @@
-
-
 using GameOfLife.Game;
-using Microsoft.AspNetCore.Builder;
+// using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameOfLife.Api;
@@ -17,7 +15,6 @@ internal class Program
     );
 
     builder.Services.AddSingleton<GameService>();
-    // builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
@@ -61,36 +58,3 @@ internal class Program
     app.Run();
   }
 }
-
-// public static class MatrixHelper
-// {
-//   public static int[][] ToDenseMatrix(int[][] sparseMatrix)
-//   {
-//     //Convert back to dense representation:
-//     // Initialize the dense list with zeros
-//     var denseMatrix = new List<List<int>>();
-//     for (int i = 0; i < 4; i++)
-//     {
-//       List<int> row = new List<int>(new int[4]); // Initialize row with zeros
-//       denseMatrix.Add(row);
-//     }
-
-//     // Populate the dense list with non-zero values from sparse data
-//     foreach (var item in sparseMatrix)
-//     {
-//       int row = item[0];
-//       int col = item[1];
-
-//       if (row >= 0 && row < 4 && col >= 0 && col < 4)
-//       {
-//         denseMatrix[row][col] = 1;
-//       }
-//       else
-//       {
-//         // Handle out-of-bounds index if necessary
-//         Console.WriteLine($"Warning: Sparse data contains out-of-bounds index ({row}, {col})");
-//       }
-//     }
-//     return denseMatrix.Select(r => r.ToArray()).ToArray();
-//   }
-// }
