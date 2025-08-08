@@ -2,9 +2,7 @@ namespace GameOfLife.Game;
 
 public class Board
 {
-  // public Guid BoardId { get;  private set; } = Guid.NewGuid();
   public State CurrentState { get; private set; }
-  // public int[][] CurrentStateMatrix { get; private set; }
   public string BoardId { get; private set; } = Guid.NewGuid().ToString();
   public int Generation { get; private set; } = 0;
 
@@ -18,27 +16,7 @@ public class Board
   {
     _initialState = initialState;
     CurrentState = new State(initialState);
-    // CurrentStateMatrix = initialState;
   }
-
-  // public void NextGeneration(int? maxGenerations = 1)
-  // {
-  //   for (int i = 0; i < maxGenerations && !IsFinal; i++)
-  //   {
-  //     // Check if the next state is the same as the current state
-  //     if (CurrentState.Next().Equals(CurrentState))
-  //     {
-  //       IsFinal = true;
-  //       return;
-  //     }
-
-  //     // Update the current state and current state matrix
-  //     CurrentState = CurrentState.Next();
-  //     // CurrentStateMatrix = CurrentState.Matrix;
-  //     //increment the generation count
-  //     Generation++;
-  //   }
-  // }
 
   public void NextGeneration(int maxGenerations = 1, bool stopWithCycle = false)
   {
@@ -63,94 +41,5 @@ public class Board
       Generation++;
     }
   }
-
-  // public void FinalGeneration()
-  // {
-  //   while (!IsFinal && !HasCycle)
-  //   {
-  //     string currentStateHash = CurrentState.GetHashCode().ToString();
-  //     // Check if the current state has already been seen
-  //     if (_previousStates.Contains(currentStateHash))
-  //     {
-  //       HasCycle = true;
-  //       return;
-  //     }
-
-  //     _previousStates.Add(currentStateHash);
-  //     // Check if the next state is the same as the current state
-  //     if (CurrentState.Next().Equals(CurrentState))
-  //     {
-  //       IsFinal = true;
-  //       return;
-  //     }
-
-  //     // Update the current state and increment the generation count          
-  //     CurrentState = CurrentState.Next();
-  //     Generation++;
-  //   }
-  // }
-
-
-  // public static List<CellPosition> ToSparseMatrix(int[][] initialState)
-  // {
-  //   List<CellPosition> sparseRepresentation = [];
-  //   if (initialState == null || initialState.Length == 0)
-  //     return sparseRepresentation;
-  //   for (int r = 0; r < initialState.Length; r++)
-  //   {
-  //     for (int c = 0; c < initialState[r].Length; c++)
-  //     {
-  //       if (initialState[r][c] != 0) // Only store non-zero elements
-  //       {
-  //         sparseRepresentation.Add(new CellPosition { Row = r, Col = c });
-  //       }
-  //     }
-  //   }
-  //   return sparseRepresentation;
-  // }
-
-  // public override string ToString()
-  // {
-  //   return $"BoardId: {BoardId}, Generation: {Generation}, IsFinal: {IsFinal}, HasCycle: {HasCycle}";
-  // }
-
-  // public override int GetHashCode()
-  // {
-  //   return BoardId.GetHashCode();
-  // }
-
-  // public override bool Equals(object? obj)
-  // {
-  //   if (obj is Board otherBoard)
-  //   {
-  //     return BoardId.Equals(otherBoard.BoardId);
-  //   }
-  //   return false;
-  // }
-
-  // private static int[,] ToMatrix(int[][] jaggedArray)
-  // {
-  //   int rows = jaggedArray.Length;
-  //   int maxCols = 0;
-  //   foreach (int[] innerArray in jaggedArray)
-  //   {
-  //     if (innerArray.Length > maxCols)
-  //     {
-  //       maxCols = innerArray.Length;
-  //     }
-  //   }
-
-  //   int[,] twoDArray = new int[rows, maxCols];
-
-  //   for (int i = 0; i < rows; i++)
-  //   {
-  //     for (int j = 0; j < jaggedArray[i].Length; j++)
-  //     {
-  //       twoDArray[i, j] = jaggedArray[i][j];
-  //     }
-  //   }
-
-  //   return twoDArray;
-  // }
 }
 
