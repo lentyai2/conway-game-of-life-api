@@ -28,50 +28,50 @@ internal class Program
     //     return Results.Ok(games);
     // });
 
-    app.MapGet("/game/{id:length(24)}", async (GameService gameService, string id) =>
-    {
-      var game = await gameService.GetAsync(id);
-      if (game is null)
-      {
-        return Results.NotFound();
-      }
-      var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
-
-      //Convert dense matrix in the form of a jagged array to a 2D array
-      //and initialize the board object
-      var board = new Board(denseMatrix);
-      // Call NextGeneration on the board instance and return next generation state
-      board.NextGeneration();
-      // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
-      return Results.Ok(board);
-    });
-
-    app.MapGet("/game_final/{id:length(24)}", async (GameService gameService, string id, [FromQuery] int n) =>
-    {
-      var game = await gameService.GetAsync(id);
-      if (game is null)
-      {
-        return Results.NotFound();
-      }
-      var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
-
-      //Convert dense matrix in the form of a jagged array to a 2D array
-      //and initialize the board object
-      var board = new Board(denseMatrix);
-      // Call NextGeneration on the board instance and return next generation state
-      board.NextGeneration(n, true);
-      if (!board.IsFinal && !board.HasCycle) return Results.InternalServerError("Game is not final or has no cycle yet.");
-      // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
-      return Results.Ok(board);
-    });
-
-    // app.MapPost("/game", async (GameService gameService, int[][]initialState) =>
+    // app.MapGet("/game/{id:length(24)}", async (GameService gameService, string id) =>
     // {
-    //   var board = new Board(initialState);
-    //   var newGame = new GameModel(board);
-    //   await gameService.CreateAsync(newGame);
-    //   return Results.Created($"/game/{newGame.Id}", newGame);
+    //   var game = await gameService.GetAsync(id);
+    //   if (game is null)
+    //   {
+    //     return Results.NotFound();
+    //   }
+    //   var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
+
+    //   //Convert dense matrix in the form of a jagged array to a 2D array
+    //   //and initialize the board object
+    //   var board = new Board(denseMatrix);
+    //   // Call NextGeneration on the board instance and return next generation state
+    //   board.NextGeneration();
+    //   // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
+    //   return Results.Ok(board);
     // });
+
+    app.MapGet("/game/{id:length(24)}", async (GameService gameService, string id, [FromQuery] int? n) =>
+    {
+      var game = await gameService.GetAsync(id);
+      if (game is null)
+      {
+        return Results.NotFound();
+      }
+      var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
+
+      //Convert dense matrix in the form of a jagged array to a 2D array
+      //and initialize the board object
+      var board = new Board(denseMatrix);
+      // Call NextGeneration on the board instance and return next generation state
+      board.NextGeneration(n ?? 1, true);
+      if (n > 1 && !board.IsFinal && !board.HasCycle) return Results.InternalServerError("Game is not final or has no cycle yet.");
+      // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
+      return Results.Ok(board);
+    });
+
+    app.MapPost("/game", async (GameService gameService, int[][]initialState) =>
+    {
+      var board = new Board(initialState);
+      var newGame = new GameModel(board);
+      await gameService.CreateAsync(newGame);
+      return Results.Created($"/game/{newGame.Id}", newGame);
+    });
     
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
