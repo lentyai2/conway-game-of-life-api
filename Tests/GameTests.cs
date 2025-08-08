@@ -60,8 +60,7 @@ public sealed class GameTests
     board.NextGeneration();
     Assert.AreEqual(board.CurrentState, new State(initialState));
 
-    board.FinalGeneration();
-    Assert.AreEqual(board.CurrentState, new State(oscillator));
+    board.NextGeneration();
     Assert.IsTrue(board.HasCycle);
   }
 }

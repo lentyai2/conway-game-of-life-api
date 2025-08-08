@@ -4,7 +4,7 @@ public class Board
 {
   // public Guid BoardId { get;  private set; } = Guid.NewGuid();
   public State CurrentState { get; private set; }
-  public int[][] CurrentStateMatrix { get; private set; }
+  // public int[][] CurrentStateMatrix { get; private set; }
   public string BoardId { get; private set; } = Guid.NewGuid().ToString();
   public int Generation { get; private set; } = 0;
 
@@ -18,72 +18,96 @@ public class Board
   {
     _initialState = initialState;
     CurrentState = new State(initialState);
-    CurrentStateMatrix = initialState;
+    // CurrentStateMatrix = initialState;
   }
 
-  public void NextGeneration(int? maxGenerations = 1)
-  {
-    for (int i = 0; i < maxGenerations && !IsFinal; i++)
-    {
-      // Check if the next state is the same as the current state
-      if (CurrentState.Next().Equals(CurrentState))
-      {
-        IsFinal = true;
-        return;
-      }
+  // public void NextGeneration(int? maxGenerations = 1)
+  // {
+  //   for (int i = 0; i < maxGenerations && !IsFinal; i++)
+  //   {
+  //     // Check if the next state is the same as the current state
+  //     if (CurrentState.Next().Equals(CurrentState))
+  //     {
+  //       IsFinal = true;
+  //       return;
+  //     }
 
-      // Update the current state and current state matrix
-      CurrentState = CurrentState.Next();
-      CurrentStateMatrix = CurrentState.Matrix;
-      //increment the generation count
-      Generation++;
-    }
-  }
+  //     // Update the current state and current state matrix
+  //     CurrentState = CurrentState.Next();
+  //     // CurrentStateMatrix = CurrentState.Matrix;
+  //     //increment the generation count
+  //     Generation++;
+  //   }
+  // }
 
-  public void FinalGeneration()
+  public void NextGeneration(int maxGenerations = 1, bool stopWithCycle = false)
   {
-    while (!IsFinal && !HasCycle)
+    for (int i = 0; i < maxGenerations && !IsFinal && !(stopWithCycle && HasCycle); i++)
     {
-      string currentStateHash = CurrentState.GetHashCode().ToString();
-      // Check if the current state has already been seen
+      var currentStateHash = CurrentState.GetHashCode().ToString();
       if (_previousStates.Contains(currentStateHash))
       {
         HasCycle = true;
-        return;
+        if (stopWithCycle) break;
       }
-
       _previousStates.Add(currentStateHash);
-      // Check if the next state is the same as the current state
-      if (CurrentState.Next().Equals(CurrentState))
+
+      var nextState = CurrentState.Next();
+      if (nextState.Equals(CurrentState))
       {
         IsFinal = true;
-        return;
+        break;
       }
 
-      // Update the current state and increment the generation count          
-      CurrentState = CurrentState.Next();
+      CurrentState = nextState;
       Generation++;
     }
   }
 
+  // public void FinalGeneration()
+  // {
+  //   while (!IsFinal && !HasCycle)
+  //   {
+  //     string currentStateHash = CurrentState.GetHashCode().ToString();
+  //     // Check if the current state has already been seen
+  //     if (_previousStates.Contains(currentStateHash))
+  //     {
+  //       HasCycle = true;
+  //       return;
+  //     }
 
-  public static List<CellPosition> ToSparseMatrix(int[][] initialState)
-  {
-    List<CellPosition> sparseRepresentation = [];
-    if (initialState == null || initialState.Length == 0)
-      return sparseRepresentation;
-    for (int r = 0; r < initialState.Length; r++)
-    {
-      for (int c = 0; c < initialState[r].Length; c++)
-      {
-        if (initialState[r][c] != 0) // Only store non-zero elements
-        {
-          sparseRepresentation.Add(new CellPosition { Row = r, Col = c });
-        }
-      }
-    }
-    return sparseRepresentation;
-  }
+  //     _previousStates.Add(currentStateHash);
+  //     // Check if the next state is the same as the current state
+  //     if (CurrentState.Next().Equals(CurrentState))
+  //     {
+  //       IsFinal = true;
+  //       return;
+  //     }
+
+  //     // Update the current state and increment the generation count          
+  //     CurrentState = CurrentState.Next();
+  //     Generation++;
+  //   }
+  // }
+
+
+  // public static List<CellPosition> ToSparseMatrix(int[][] initialState)
+  // {
+  //   List<CellPosition> sparseRepresentation = [];
+  //   if (initialState == null || initialState.Length == 0)
+  //     return sparseRepresentation;
+  //   for (int r = 0; r < initialState.Length; r++)
+  //   {
+  //     for (int c = 0; c < initialState[r].Length; c++)
+  //     {
+  //       if (initialState[r][c] != 0) // Only store non-zero elements
+  //       {
+  //         sparseRepresentation.Add(new CellPosition { Row = r, Col = c });
+  //       }
+  //     }
+  //   }
+  //   return sparseRepresentation;
+  // }
 
   // public override string ToString()
   // {

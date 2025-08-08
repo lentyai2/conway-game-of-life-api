@@ -2,6 +2,7 @@
 
 using GameOfLife.Game;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameOfLife.Api;
 internal class Program
@@ -39,18 +40,39 @@ internal class Program
       //Convert dense matrix in the form of a jagged array to a 2D array
       //and initialize the board object
       var board = new Board(denseMatrix);
-      // Call NextGeneration on the board instance and return next genration state
+      // Call NextGeneration on the board instance and return next generation state
       board.NextGeneration();
       // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
-      return Results.Ok(board.CurrentStateMatrix);
+      return Results.Ok(board);
     });
 
-
-    app.MapPost("/game", async (GameService gameService, GameModel newGame) =>
+    app.MapGet("/game_final/{id:length(24)}", async (GameService gameService, string id, [FromQuery] int n) =>
     {
-      await gameService.CreateAsync(newGame);
-      return Results.Created($"/game/{newGame.Id}", newGame);
+      var game = await gameService.GetAsync(id);
+      if (game is null)
+      {
+        return Results.NotFound();
+      }
+      var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
+
+      //Convert dense matrix in the form of a jagged array to a 2D array
+      //and initialize the board object
+      var board = new Board(denseMatrix);
+      // Call NextGeneration on the board instance and return next generation state
+      board.NextGeneration(n, true);
+      if (!board.IsFinal && !board.HasCycle) return Results.InternalServerError("Game is not final or has no cycle yet.");
+      // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
+      return Results.Ok(board);
     });
+
+    // app.MapPost("/game", async (GameService gameService, int[][]initialState) =>
+    // {
+    //   var board = new Board(initialState);
+    //   var newGame = new GameModel(board);
+    //   await gameService.CreateAsync(newGame);
+    //   return Results.Created($"/game/{newGame.Id}", newGame);
+    // });
+    
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -101,63 +123,63 @@ public static class MatrixHelper
     return denseMatrix.Select(r => r.ToArray()).ToArray();
   }
 
-  public static int[][] ToSparseMatrix(int[][] denseMatrix)
-  {
+  // public static int[][] ToSparseMatrix(int[][] denseMatrix)
+  // {
 
-    // Convert to sparse array representation (List of tuples)
-    List<(int row, int col)> sparseRepresentation = new List<(int row, int col)>();
+  //   // Convert to sparse array representation (List of tuples)
+  //   List<(int row, int col)> sparseRepresentation = new List<(int row, int col)>();
 
-    for (int r = 0; r < denseMatrix[0].Length; r++)
-    {
-      for (int c = 0; c < denseMatrix[r].Length; c++)
-      {
-        if (denseMatrix[r][c] != 0) // Only store non-zero elements
-        {
-          sparseRepresentation.Add((r, c));
-        }
-      }
-    }
-    return denseMatrix.Select(r => r.ToArray()).ToArray();
-  }
-  public static int[][] ToJaggedArray(int[,] matrix)
-  {
-    int rows = matrix.GetLength(0);
-    int cols = matrix.GetLength(1);
-    int[][] jagged = new int[rows][];
-    for (int i = 0; i < rows; i++)
-    {
-      jagged[i] = new int[cols];
-      for (int j = 0; j < cols; j++)
-      {
-        jagged[i][j] = matrix[i, j];
-      }
-    }
-    return jagged;
-  }
-  public static int[,] ToMatrix(int[][] jaggedArray)
-  {
-    if (jaggedArray == null || jaggedArray.Length == 0)
-    {
-      return new int[0, 0];
-    }
-    int rows = jaggedArray.Length;
-    int maxCols = 0;
-    foreach (int[] innerArray in jaggedArray)
-    {
-      if (innerArray.Length > maxCols)
-      {
-        maxCols = innerArray.Length;
-      }
-    }
-    int[,] twoDArray = new int[rows, maxCols];
+  //   for (int r = 0; r < denseMatrix[0].Length; r++)
+  //   {
+  //     for (int c = 0; c < denseMatrix[r].Length; c++)
+  //     {
+  //       if (denseMatrix[r][c] != 0) // Only store non-zero elements
+  //       {
+  //         sparseRepresentation.Add((r, c));
+  //       }
+  //     }
+  //   }
+  //   return denseMatrix.Select(r => r.ToArray()).ToArray();
+  // }
+  // public static int[][] ToJaggedArray(int[,] matrix)
+  // {
+  //   int rows = matrix.GetLength(0);
+  //   int cols = matrix.GetLength(1);
+  //   int[][] jagged = new int[rows][];
+  //   for (int i = 0; i < rows; i++)
+  //   {
+  //     jagged[i] = new int[cols];
+  //     for (int j = 0; j < cols; j++)
+  //     {
+  //       jagged[i][j] = matrix[i, j];
+  //     }
+  //   }
+  //   return jagged;
+  // }
+  // public static int[,] ToMatrix(int[][] jaggedArray)
+  // {
+  //   if (jaggedArray == null || jaggedArray.Length == 0)
+  //   {
+  //     return new int[0, 0];
+  //   }
+  //   int rows = jaggedArray.Length;
+  //   int maxCols = 0;
+  //   foreach (int[] innerArray in jaggedArray)
+  //   {
+  //     if (innerArray.Length > maxCols)
+  //     {
+  //       maxCols = innerArray.Length;
+  //     }
+  //   }
+  //   int[,] twoDArray = new int[rows, maxCols];
 
-    for (int i = 0; i < rows; i++)
-    {
-      for (int j = 0; j < jaggedArray[i].Length; j++)
-      {
-        twoDArray[i, j] = jaggedArray[i][j];
-      }
-    }
-    return twoDArray;
-  }
+  //   for (int i = 0; i < rows; i++)
+  //   {
+  //     for (int j = 0; j < jaggedArray[i].Length; j++)
+  //     {
+  //       twoDArray[i, j] = jaggedArray[i][j];
+  //     }
+  //   }
+  //   return twoDArray;
+  // }
 }
