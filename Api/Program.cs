@@ -39,7 +39,7 @@ internal class Program
       return Results.Ok(board);
     });
 
-    app.MapPost("/game", async (GameService gameService, int[][]initialState) =>
+    app.MapPost("/game", async (GameService gameService, [FromBody] int[][] initialState) =>
     {
       var board = new Board(initialState);
       var newGame = new GameModel(board);
