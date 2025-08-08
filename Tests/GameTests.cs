@@ -8,7 +8,7 @@ public sealed class GameTests
   [TestMethod]
   public void TestInitialEmptyStateFinal()
   {
-    var initialState = new[,] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+    int[][] initialState = new int[][] { new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 } };
 
     var board = new Board(initialState);
     board.NextGeneration();
@@ -19,11 +19,11 @@ public sealed class GameTests
   [TestMethod]
   public void TestBlock()
   {
-    var initialState = new[,] {
-        { 0, 0, 0, 0 },
-        { 0, 1, 1, 0 },
-        { 0, 1, 1, 0 },
-        { 0, 0, 0, 0 }
+    int[][] initialState = new int[][] {
+        new int[] { 0, 0, 0, 0 },
+        new int[] { 0, 1, 1, 0 },
+        new int[] { 0, 1, 1, 0 },
+        new int[] { 0, 0, 0, 0 }
     };
 
     var board = new Board(initialState);
@@ -36,20 +36,20 @@ public sealed class GameTests
   [TestMethod]
   public void TestBlinker()
   {
-    var initialState = new[,] {
-        { 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0 }
+    int[][] initialState = new int[][] {
+        new int[] { 0, 0, 0, 0, 0 },
+        new int[] { 0, 0, 1, 0, 0 },
+        new int[] { 0, 0, 1, 0, 0 },
+        new int[] { 0, 0, 1, 0, 0 },
+        new int[] { 0, 0, 0, 0, 0 }
     };
 
-    var oscillator = new[,] {
-        { 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 0 },
-        { 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0 }
+    int[][] oscillator = new int[][] {
+        new int[] { 0, 0, 0, 0, 0 },
+        new int[] { 0, 0, 0, 0, 0 },
+        new int[] { 0, 1, 1, 1, 0 },
+        new int[] { 0, 0, 0, 0, 0 },
+        new int[] { 0, 0, 0, 0, 0 }
     };
 
     var board = new Board(initialState);

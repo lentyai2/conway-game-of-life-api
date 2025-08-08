@@ -1,15 +1,25 @@
 namespace GameOfLife.Game;
 
-public class Board(int[,] initialState)
+public class Board
 {
   // public Guid BoardId { get;  private set; } = Guid.NewGuid();
-  public State CurrentState { get; private set; } = new State(initialState);
+  public State CurrentState { get; private set; }
+  public int[][] CurrentStateMatrix { get; private set; }
+  public string BoardId { get; private set; } = Guid.NewGuid().ToString();
   public int Generation { get; private set; } = 0;
 
   public bool IsFinal { get; private set; } = false;
 
   public bool HasCycle { get; private set; } = false;
   private HashSet<string> _previousStates = new HashSet<string>();
+  private readonly int[][] _initialState;
+
+  public Board(int[][] initialState)
+  {
+    _initialState = initialState;
+    CurrentState = new State(initialState);
+    CurrentStateMatrix = initialState;
+  }
 
   public void NextGeneration(int? maxGenerations = 1)
   {
@@ -22,8 +32,10 @@ public class Board(int[,] initialState)
         return;
       }
 
-      // Update the current state and increment the generation count          
+      // Update the current state and current state matrix
       CurrentState = CurrentState.Next();
+      CurrentStateMatrix = CurrentState.Matrix;
+      //increment the generation count
       Generation++;
     }
   }
@@ -54,41 +66,13 @@ public class Board(int[,] initialState)
     }
   }
 
-  public static int[,] ToMatrix(int[][] jaggedArray)
-  {
-
-    if (jaggedArray == null || jaggedArray.Length == 0)
-    {
-      return new int[0, 0];
-    }
-    int rows = jaggedArray.Length;
-    int maxCols = 0;
-    foreach (int[] innerArray in jaggedArray)
-    {
-      if (innerArray.Length > maxCols)
-      {
-        maxCols = innerArray.Length;
-      }
-    }
-
-    int[,] twoDArray = new int[rows, maxCols];
-
-    for (int i = 0; i < rows; i++)
-    {
-      for (int j = 0; j < jaggedArray[i].Length; j++)
-      {
-        twoDArray[i, j] = jaggedArray[i][j];
-      }
-    }
-
-    return twoDArray;
-  }
 
   public static List<CellPosition> ToSparseMatrix(int[][] initialState)
   {
     List<CellPosition> sparseRepresentation = [];
-
-    for (int r = 0; r < initialState[0].Length; r++)
+    if (initialState == null || initialState.Length == 0)
+      return sparseRepresentation;
+    for (int r = 0; r < initialState.Length; r++)
     {
       for (int c = 0; c < initialState[r].Length; c++)
       {

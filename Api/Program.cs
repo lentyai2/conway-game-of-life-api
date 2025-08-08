@@ -34,12 +34,15 @@ internal class Program
       {
         return Results.NotFound();
       }
-      var test = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
+      var denseMatrix = MatrixHelper.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
 
-      // var board = new Board(test);
-      // board.NextGeneration();
-      // var test2 = MatrixHelper.ToJaggedArray(board.CurrentState);
-      return Results.Ok(test);
+      //Convert dense matrix in the form of a jagged array to a 2D array
+      //and initialize the board object
+      var board = new Board(denseMatrix);
+      // Call NextGeneration on the board instance and return next genration state
+      board.NextGeneration();
+      // var jaggedArray = MatrixHelper.ToJaggedArray(board.CurrentState);
+      return Results.Ok(board.CurrentStateMatrix);
     });
 
 
@@ -95,9 +98,27 @@ public static class MatrixHelper
       }
     }
     Console.WriteLine("Dense Matrix: " + denseMatrix);
-    return denseMatrix.Select(r => r.ToArray()).ToArray();      
+    return denseMatrix.Select(r => r.ToArray()).ToArray();
   }
-  
+
+  public static int[][] ToSparseMatrix(int[][] denseMatrix)
+  {
+
+    // Convert to sparse array representation (List of tuples)
+    List<(int row, int col)> sparseRepresentation = new List<(int row, int col)>();
+
+    for (int r = 0; r < denseMatrix[0].Length; r++)
+    {
+      for (int c = 0; c < denseMatrix[r].Length; c++)
+      {
+        if (denseMatrix[r][c] != 0) // Only store non-zero elements
+        {
+          sparseRepresentation.Add((r, c));
+        }
+      }
+    }
+    return denseMatrix.Select(r => r.ToArray()).ToArray();
+  }
   public static int[][] ToJaggedArray(int[,] matrix)
   {
     int rows = matrix.GetLength(0);
@@ -112,5 +133,31 @@ public static class MatrixHelper
       }
     }
     return jagged;
+  }
+  public static int[,] ToMatrix(int[][] jaggedArray)
+  {
+    if (jaggedArray == null || jaggedArray.Length == 0)
+    {
+      return new int[0, 0];
+    }
+    int rows = jaggedArray.Length;
+    int maxCols = 0;
+    foreach (int[] innerArray in jaggedArray)
+    {
+      if (innerArray.Length > maxCols)
+      {
+        maxCols = innerArray.Length;
+      }
+    }
+    int[,] twoDArray = new int[rows, maxCols];
+
+    for (int i = 0; i < rows; i++)
+    {
+      for (int j = 0; j < jaggedArray[i].Length; j++)
+      {
+        twoDArray[i, j] = jaggedArray[i][j];
+      }
+    }
+    return twoDArray;
   }
 }
