@@ -1,60 +1,35 @@
-using GameOfLife.Game;
-// using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
+using GameOfLife.Game; // Ensure correct namespace for GameService and GameOfLifeDatabaseSettings
 
-namespace GameOfLife.Api;
+namespace Api;
+
 internal class Program
 {
-  private static void Main(string[] args)
-  {
-    var builder = WebApplication.CreateBuilder(args);
-
-    // Add services to the container.
-    builder.Services.Configure<GameOfLifeDatabaseSettings>(
-        builder.Configuration.GetSection("GameOfLifeDatabase")
-    );
-
-    builder.Services.AddSingleton<GameService>();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
-
-    var app = builder.Build();
-
-    app.MapGet("/game/{id:length(24)}", async (GameService gameService, string id, [FromQuery] int? n) =>
+    private static void Main(string[] args)
     {
-      var game = await gameService.GetAsync(id);
-      if (game is null)
-      {
-        return Results.NotFound();
-      }
-      var denseMatrix = GameModel.ToDenseMatrix(game.CurrentState.Select(c => new int[] { c.Row, c.Col }).ToArray());
+        var builder = WebApplication.CreateBuilder(args);
 
-      var board = new Board(denseMatrix);
+        // Add services to the container.
+        builder.Services.Configure<GameOfLifeDatabaseSettings>(
+            builder.Configuration.GetSection("GameOfLifeDatabase")
+        );
 
-      // Call NextGeneration on the board instance and return next generation state
-      board.NextGeneration(n ?? 1, true);
+        builder.Services.AddSingleton<GameService>();
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApi(); // .NET 9.0 OpenAPI support
 
-      if (n > 1 && !board.IsFinal && !board.HasCycle) return Results.InternalServerError("Game is not final or has no cycle yet.");
+        var app = builder.Build();
 
-      return Results.Ok(board);
-    });
+        app.UseHttpsRedirection();
 
-    app.MapPost("/game", async (GameService gameService, [FromBody] int[][] initialState) =>
-    {
-      var board = new Board(initialState);
-      var newGame = new GameModel(board);
-      await gameService.CreateAsync(newGame);
-      return Results.Created($"/game/{newGame.Id}", newGame);
-    });
-    
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-      app.MapOpenApi();
+        // Optional: Add global exception handling middleware for better error responses
+        app.UseExceptionHandler("/error");
+
+        app.MapControllers();
+        app.MapOpenApi(); // .NET 9.0 OpenAPI endpoint
+
+        // Optional: Add a simple health check endpoint
+        app.MapGet("/health", () => Results.Ok("Healthy"));
+
+        app.Run();
     }
-
-    app.UseHttpsRedirection();
-
-    app.Run();
-  }
 }

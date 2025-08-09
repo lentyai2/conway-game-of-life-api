@@ -1,4 +1,4 @@
-namespace GameOfLifeApi;
+namespace Api;
 
 public class CellPosition
 {

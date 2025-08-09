@@ -1,4 +1,4 @@
-namespace GameOfLife.Api;
+namespace Api;
 
 public class GameOfLifeDatabaseSettings
 {

@@ -2,12 +2,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using GameOfLife.Game;
 
-namespace GameOfLife.Api;
+namespace Api;
 
 public class GameModel
 {
-  // public GameModel() { CurrentState = new List<CellPosition>(); }
-
   public GameModel(Board board)
   {
     CurrentState = ToSparseMatrix(board.CurrentState.Matrix);

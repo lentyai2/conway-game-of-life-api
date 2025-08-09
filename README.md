@@ -47,7 +47,7 @@ This project implements Conway's Game of Life as a .NET solution with a clean se
 3. **Run the API:**
    ```sh
    cd Api
-   dotnet run
+   dotnet run [--launch-profile https]
    ```
    The API will be available at `http://localhost:5181` (see launchSettings.json).
 
@@ -57,16 +57,23 @@ This project implements Conway's Game of Life as a .NET solution with a clean se
    dotnet test
    ```
 
-## API Overview
+## API Functional Requirements:
 
-The API exposes endpoints to:
+### Endpoints
+1. Upload Board State
+  - Accept a new board state (2D grid of cells).
+  - Return a unique identifier for the stored board.
+2. Get Next State
+  - Given a board ID, return the next generation state of the board.
+3. Get N States Ahead
+  - Given a board ID and a number N, return the board state after N generations.
+4. Get Final State
+  - Return the final stable state of the board (i.e., when it no longer changes or cycles).
+  - If the board does not reach a stable conclusion within a reasonable number of iterations, return a suitable error message.
 
-- Start a new game
-- Get the current state of the board
-- Advance to the next generation
-- Set or clear cells
-- Retrieve game history
 
+OpenApi specification can be viewed here: `http://localhost:5181/openapi/v1.json`
+- Example requests can be made using tools like Postman or cURL.
 See Api.http for example requests.
 
 ## Technologies Used

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 // using Newtonsoft.Json;
 using System.Text.Json;
 
-namespace GameOfLife.Api;
+namespace Api;
 
 public class GameService
 {
