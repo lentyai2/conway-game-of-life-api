@@ -81,8 +81,6 @@ See Api.http for example requests.
 - ASP.NET Core Web API
 - .NET 8.0/9.0
 - MongoDB (via MongoDB.Driver)
-- MathNet.Numerics
-- Newtonsoft.Json
 - MSTest (for unit testing)
 
 ## Contributing
