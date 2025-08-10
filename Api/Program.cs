@@ -1,4 +1,4 @@
-using GameOfLife.Game; // Ensure correct namespace for GameService and GameOfLifeDatabaseSettings
+using Game;
 
 namespace Api;
 

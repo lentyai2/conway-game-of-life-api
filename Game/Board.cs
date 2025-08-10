@@ -1,4 +1,4 @@
-namespace GameOfLife.Game;
+namespace Game;
 
 public class Board
 {

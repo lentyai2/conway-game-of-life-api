@@ -1,6 +1,6 @@
-using GameOfLife.Game;
+using Game;
 
-namespace GameOfLife.Tests;
+namespace Tests;
 
 [TestClass]
 public sealed class GameTests

@@ -1,5 +1,5 @@
-using GameOfLife.Game;
 using Microsoft.AspNetCore.Mvc;
+using Game;
 
 namespace Api;
 

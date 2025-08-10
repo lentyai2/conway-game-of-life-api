@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using GameOfLife.Game;
+using Game;
 
 namespace Api;
 

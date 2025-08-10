@@ -1,9 +1,5 @@
-using GameOfLife.Game;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-// using Newtonsoft.Json;
-using System.Text.Json;
 
 namespace Api;
 
